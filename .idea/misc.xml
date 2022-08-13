@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/drawable/next.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/previous.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/settings.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/activity_subject.xml" value="0.1" />
       </map>
     </option>
   </component>
