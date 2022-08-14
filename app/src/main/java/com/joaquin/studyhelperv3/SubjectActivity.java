@@ -8,18 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.joaquin.studyhelperv3.model.Subject;
 import com.joaquin.studyhelperv3.viewmodel.SubjectListViewModel;
+
 import java.util.List;
+
 import androidx.lifecycle.ViewModelProvider;
 
 public class SubjectActivity extends AppCompatActivity
         implements SubjectDialogFragment.OnSubjectEnteredListener {
-
+    private Boolean mLoadSubjectList = true;
     private SubjectAdapter mSubjectAdapter;
     private RecyclerView mRecyclerView;
     private int[] mSubjectColors;
@@ -36,7 +40,10 @@ public class SubjectActivity extends AppCompatActivity
 //        mSubjectListViewModel = new SubjectListViewModel(getApplication())
         // Call updateUI() when the subject list changes
         mSubjectListViewModel.getSubjects().observe(this, subjects -> {
-            updateUI(subjects);
+            if (mLoadSubjectList) {
+
+                updateUI(subjects);
+            }
         });
 
         mSubjectColors = getResources().getIntArray(R.array.subjectColors);
@@ -62,9 +69,11 @@ public class SubjectActivity extends AppCompatActivity
     public void onSubjectEntered(String subjectText) {
         if (subjectText.length() > 0) {
             Subject subject = new Subject(subjectText);
+//            Stop updateUI() from being called
+            mLoadSubjectList = false;
             mSubjectListViewModel.addSubject(subject);
 //            updateUI(mSubjectListViewModel.getSubjects());
-
+            mSubjectAdapter.addSubject(subject);
             Toast.makeText(this, "Added " + subjectText, Toast.LENGTH_SHORT).show();
         }
     }
@@ -122,13 +131,25 @@ public class SubjectActivity extends AppCompatActivity
         }
 
         @Override
-        public void onBindViewHolder(SubjectHolder holder, int position){
+        public void onBindViewHolder(SubjectHolder holder, int position) {
             holder.bind(mSubjectList.get(position), position);
         }
 
         @Override
         public int getItemCount() {
             return mSubjectList.size();
+        }
+
+        public void addSubject(Subject subject) {
+
+            // Add the new subject at the beginning of the list
+            mSubjectList.add(0, subject);
+
+            // Notify the adapter that item was added to the beginning of the list
+            notifyItemInserted(0);
+
+            // Scroll to the top
+            mRecyclerView.scrollToPosition(0);
         }
     }
 }
