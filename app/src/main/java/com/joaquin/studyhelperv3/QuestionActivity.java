@@ -16,6 +16,7 @@ import com.joaquin.studyhelperv3.model.Question;
 import com.joaquin.studyhelperv3.model.Subject;
 import com.joaquin.studyhelperv3.viewmodel.QuestionListViewModel;
 import java.util.List;
+import androidx.lifecycle.ViewModelProvider;
 
 public class QuestionActivity extends AppCompatActivity {
 
@@ -57,11 +58,17 @@ public class QuestionActivity extends AppCompatActivity {
         mSubject.setId(subjectId);
 
         // Get all questions for this subject
-        mQuestionListViewModel = new QuestionListViewModel(getApplication());
-        mQuestionList = mQuestionListViewModel.getQuestions(subjectId);
+//        mQuestionListViewModel = new QuestionListViewModel(getApplication());
+        mQuestionListViewModel = new ViewModelProvider(this).get(QuestionListViewModel.class);
+        mQuestionListViewModel.loadQuestions(subjectId);
+        mQuestionListViewModel.questionListLiveData.observe(this, questions -> {
+            mQuestionList = questions;
+            updateUI();
+        });
+//        mQuestionList = mQuestionListViewModel.getQuestions(subjectId);
 
         // Display question
-        updateUI();
+//        updateUI();
     }
 
     private void updateUI() {

@@ -2,19 +2,39 @@ package com.joaquin.studyhelperv3.viewmodel;
 
 
 import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import com.joaquin.studyhelperv3.model.Question;
 import com.joaquin.studyhelperv3.repo.StudyRepository;
+
 import java.util.List;
 
-public class QuestionListViewModel {
+public class QuestionListViewModel extends AndroidViewModel {
+    private StudyRepository mStudyRepo;
+    private final MutableLiveData<Long> mSubjectIdLiveData = new MutableLiveData<>();
 
-    private StudyRepository studyRepo;
+    public LiveData<List<Question>> questionListLiveData =
+            Transformations.switchMap(mSubjectIdLiveData, subjectId ->
+                    mStudyRepo.getQuestions(subjectId));
 
-    public QuestionListViewModel(Application application) {
-        studyRepo = StudyRepository.getInstance(application.getApplicationContext());
+    public QuestionListViewModel(@NonNull Application application) {
+        super(application);
+        mStudyRepo = StudyRepository.getInstance(application.getApplicationContext());
     }
 
-    public List<Question> getQuestions(long subjectId) {
-        return studyRepo.getQuestions(subjectId);
+    public void loadQuestions(long subjectId) {
+        mSubjectIdLiveData.setValue(subjectId);
     }
+
+    public void addQuestion(Question question) {
+        mStudyRepo.addQuestion(question);
+    }
+
+    public void deleteQuestion(Question question) {
+        mStudyRepo.deleteQuestion(question);
+    }
+
 }

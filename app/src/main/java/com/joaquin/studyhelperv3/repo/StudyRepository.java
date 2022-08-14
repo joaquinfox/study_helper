@@ -8,6 +8,7 @@ import androidx.room.Room;
 import com.joaquin.studyhelperv3.model.Question;
 import com.joaquin.studyhelperv3.model.Subject;
 import java.util.List;
+import androidx.lifecycle.LiveData;
 
 public class StudyRepository {
 
@@ -81,11 +82,11 @@ public class StudyRepository {
         mSubjectDao.deleteSubject(subject);
     }
 
-    public Question getQuestion(long questionId) {
+    public LiveData<Question> getQuestion(long questionId) {
         return mQuestionDao.getQuestion(questionId);
     }
 
-    public List<Question> getQuestions(long subjectId) {
+    public LiveData<List<Question>> getQuestions(long subjectId) {
         return mQuestionDao.getQuestions(subjectId);
     }
 
