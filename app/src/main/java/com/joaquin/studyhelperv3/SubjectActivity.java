@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.joaquin.studyhelperv3.model.Subject;
 import com.joaquin.studyhelperv3.viewmodel.SubjectListViewModel;
 import java.util.List;
+import androidx.lifecycle.ViewModelProvider;
 
 public class SubjectActivity extends AppCompatActivity
         implements SubjectDialogFragment.OnSubjectEnteredListener {
@@ -29,7 +30,14 @@ public class SubjectActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject);
 
-        mSubjectListViewModel = new SubjectListViewModel(getApplication());
+
+        mSubjectListViewModel = new ViewModelProvider(this).get(SubjectListViewModel.class);
+
+//        mSubjectListViewModel = new SubjectListViewModel(getApplication())
+        // Call updateUI() when the subject list changes
+        mSubjectListViewModel.getSubjects().observe(this, subjects -> {
+            updateUI(subjects);
+        });
 
         mSubjectColors = getResources().getIntArray(R.array.subjectColors);
 
@@ -42,7 +50,7 @@ public class SubjectActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
         // Show the subjects
-        updateUI(mSubjectListViewModel.getSubjects());
+//        updateUI(mSubjectListViewModel.getSubjects());
     }
 
     private void updateUI(List<Subject> subjectList) {
@@ -55,7 +63,7 @@ public class SubjectActivity extends AppCompatActivity
         if (subjectText.length() > 0) {
             Subject subject = new Subject(subjectText);
             mSubjectListViewModel.addSubject(subject);
-            updateUI(mSubjectListViewModel.getSubjects());
+//            updateUI(mSubjectListViewModel.getSubjects());
 
             Toast.makeText(this, "Added " + subjectText, Toast.LENGTH_SHORT).show();
         }

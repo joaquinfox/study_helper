@@ -2,7 +2,7 @@ package com.joaquin.studyhelperv3.repo;
 
 
 import android.content.Context;
-
+import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
 import com.joaquin.studyhelperv3.model.Question;
@@ -30,9 +30,9 @@ public class StudyRepository {
         mSubjectDao = database.subjectDao();
         mQuestionDao = database.questionDao();
 
-        if (mSubjectDao.getSubjects().isEmpty()) {
-            addStarterData();
-        }
+//        if (mSubjectDao.getSubjects().isEmpty()) {
+//            addStarterData();
+//        }
     }
 
     private void addStarterData() {
@@ -69,11 +69,11 @@ public class StudyRepository {
         subject.setId(subjectId);
     }
 
-    public Subject getSubject(long subjectId) {
+    public LiveData<Subject> getSubject(long subjectId) {
         return mSubjectDao.getSubject(subjectId);
     }
 
-    public List<Subject> getSubjects() {
+    public LiveData<List<Subject>> getSubjects() {
         return mSubjectDao.getSubjects();
     }
 
