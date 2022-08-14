@@ -17,6 +17,10 @@ import com.joaquin.studyhelperv3.model.Subject;
 import com.joaquin.studyhelperv3.viewmodel.QuestionListViewModel;
 import java.util.List;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import android.app.Activity;
+import android.widget.Toast;
 
 public class QuestionActivity extends AppCompatActivity {
 
@@ -136,17 +140,33 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void addQuestion() {
-        // TODO: Add question
+        Intent intent = new Intent(this, QuestionEditActivity.class);
+        intent.putExtra(QuestionEditActivity.EXTRA_SUBJECT_ID, mSubject.getId());
+        mAddQuestionResultLauncher.launch(intent);
     }
+    private final ActivityResultLauncher<Intent> mEditQuestionResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Toast.makeText(QuestionActivity.this, R.string.question_updated, Toast.LENGTH_SHORT).show();
+                }
+            });
 
     private void editQuestion() {
-        // TODO: Edit question
+        if (mCurrentQuestionIndex >= 0) {
+            Intent intent = new Intent(this, QuestionEditActivity.class);
+            long questionId = mQuestionList.get(mCurrentQuestionIndex).getId();
+            intent.putExtra(QuestionEditActivity.EXTRA_QUESTION_ID, questionId);
+            mEditQuestionResultLauncher.launch(intent);
+        }
     }
-
     private void deleteQuestion() {
-        // TODO: Delete question
+        if (mCurrentQuestionIndex >= 0) {
+            Question question = mQuestionList.get(mCurrentQuestionIndex);
+            mQuestionListViewModel.deleteQuestion(question);
+            Toast.makeText(this, R.string.question_deleted, Toast.LENGTH_SHORT).show();
+        }
     }
-
     private void showQuestion(int questionIndex) {
 
         // Show question at the given index
@@ -183,5 +203,16 @@ public class QuestionActivity extends AppCompatActivity {
             mAnswerLabelTextView.setVisibility(View.VISIBLE);
         }
     }
+    private final ActivityResultLauncher<Intent> mAddQuestionResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+
+                    // Display the added question, which will appear at end of list
+                    mCurrentQuestionIndex = mQuestionList.size();
+                    Toast.makeText(QuestionActivity.this, R.string.question_added, Toast.LENGTH_SHORT).show();
+                }
+            });
+
 }
 
